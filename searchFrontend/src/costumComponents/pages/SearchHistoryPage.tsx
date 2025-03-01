@@ -50,7 +50,6 @@ const SearchHistoryPage = () => {
 
                 <Separator className="mb-4" />
 
-                {/* 🔹 Search History List */}
                 {searchHistory.length === 0 ? (
                     <p className="text-muted-foreground text-center text-sm">No recent searches.</p>
                 ) : (
@@ -64,7 +63,6 @@ const SearchHistoryPage = () => {
                                     <Clock className="w-4 h-4 mr-2 text-gray-500" />
                                     <span className="flex-1">{query}</span>
                                 </li>
-                                {/* Separator line between history items */}
                                 {index !== searchHistory.length - 1 && <Separator />}
                             </div>
                         ))}
