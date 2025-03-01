@@ -1,38 +1,48 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { setQuery, setResults } from "@/redux/searchSlice";
+import { useNavigate } from "react-router-dom";
 import api from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { RootState } from "@/redux/store";
 
 const SearchBar = () => {
     const dispatch = useDispatch();
-    const [localQuery, setLocalQuery] = useState("");
+    const navigate = useNavigate();
+    const storedQuery = useSelector((state: RootState) => state.search.query);
+    const [localQuery, setLocalQuery] = useState(storedQuery);
+
+    useEffect(() => {
+        setLocalQuery(storedQuery); // Update input when query updates
+    }, [storedQuery]);
 
     const handleSearch = async () => {
         if (!localQuery.trim()) return;
 
-        dispatch(setQuery(localQuery)); // Store query in Redux
+        dispatch(setQuery(localQuery));
+
+        navigate(`/search?query=${encodeURIComponent(localQuery)}`);
 
         try {
-            const response = await api.get(`/search?q=${encodeURIComponent(localQuery)}`);
-            dispatch(setResults(response.data)); // Store API results in Redux
+            const response = await api.get(`/search?query=${encodeURIComponent(localQuery)}`);
+            dispatch(setResults(response.data));
         } catch (error) {
             console.error("Error fetching search results:", error);
-            dispatch(setResults([])); // Clear results on error
+            dispatch(setResults([]));
         }
     };
 
     return (
-        <div className="flex gap-2 items-center">
+        <div className="flex items-center space-x-2">
             <Input
                 type="text"
                 value={localQuery}
                 onChange={(e) => setLocalQuery(e.target.value)}
-                placeholder="Search something..."
-                className="w-full border border-gray-300 rounded-md p-2"
+                placeholder="Search for something..."
+                className="w-full border-gray-300 rounded-md p-2"
             />
-            <Button onClick={handleSearch} className="px-4 py-2">
+            <Button onClick={handleSearch} className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700">
                 Search
             </Button>
         </div>
@@ -40,3 +50,4 @@ const SearchBar = () => {
 };
 
 export default SearchBar;
+

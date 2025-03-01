@@ -1,9 +1,10 @@
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Card } from "@/components/ui/card";
+import {SearchResult} from "@/type.ts";
 
 const SearchResults = () => {
-    const results = useSelector((state: RootState) => state.search.results);
+    const results: SearchResult[] = useSelector((state: RootState) => state.search.results);
 
     if (results.length === 0) {
         return <p className="text-gray-500 text-center mt-4">No results found.</p>;

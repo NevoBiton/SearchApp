@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {SearchResult} from "@/type.ts";
+
 
 interface SearchState {
     query: string;
-    results: { title: string; url: string }[];
+    results: SearchResult[];
 }
 
 const initialState: SearchState = {
@@ -17,7 +19,7 @@ const searchSlice = createSlice({
         setQuery: (state, action: PayloadAction<string>) => {
             state.query = action.payload;
         },
-        setResults: (state, action: PayloadAction<{ title: string; url: string }[]>) => {
+        setResults: (state, action: PayloadAction<SearchResult[]>) => {
             state.results = action.payload;
         },
     },
