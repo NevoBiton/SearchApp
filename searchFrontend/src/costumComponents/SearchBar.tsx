@@ -60,7 +60,7 @@ const SearchBar = ({ setLoading }: SearchBarProps) => {
                 placeholder="Search for something..."
                 className="w-full border-gray-300 rounded-md p-2"
             />
-            <Button onClick={handleSearch} className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700">
+            <Button onClick={handleSearch} className="cursor-pointer px-4 py-2 bg-blue-600 text-white hover:bg-blue-700">
                 Search
             </Button>
         </div>
