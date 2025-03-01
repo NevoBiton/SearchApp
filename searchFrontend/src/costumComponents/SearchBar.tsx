@@ -27,10 +27,14 @@ const SearchBar = ({ setLoading }: SearchBarProps) => {
         dispatch(setQuery(localQuery));
         setLoading(true);
 
-        navigate(`/search?query=${encodeURIComponent(localQuery)}`);
+        const newSearchParams = new URLSearchParams();
+        newSearchParams.set("query", localQuery);
+        newSearchParams.set("page", "1");
+
+        navigate(`/search?${newSearchParams.toString()}`, { replace: true });
 
         try {
-            const response = await api.get(`/search?query=${encodeURIComponent(localQuery)}`);
+            const response = await api.get(`/search?query=${encodeURIComponent(localQuery)}&limit=5&offset=0`);
             dispatch(setResults(response.data));
         } catch (error) {
             console.error(error);

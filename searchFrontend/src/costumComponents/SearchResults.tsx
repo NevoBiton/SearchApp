@@ -1,32 +1,33 @@
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { Card } from "@/components/ui/card";
-import { SearchResult } from "@/type.ts";
-import SearchSkeletons from "@/costumComponents/SearchSkeletons.tsx";
+import SearchSkeletons from "./SearchSkeletons";
 
 const SearchResults = ({ loading }: { loading: boolean }) => {
-    const results: SearchResult[] = useSelector((state: RootState) => state.search.results);
+    const searchResults = useSelector((state: RootState) => state.search.results);
 
     if (loading) {
         return <SearchSkeletons />;
     }
 
-    if (results.length === 0) {
+    if (searchResults === null || searchResults === undefined) {
+        return null;
+    }
+
+    if (searchResults.length === 0) {
         return <p className="text-gray-500 text-center mt-4">No results found.</p>;
     }
 
     return (
         <div className="mt-4 space-y-2">
-            {results.map((item) => (
-                <Card key={item.url} className="p-4 border">
+            {searchResults.map((item) => (
+                <div key={item.url} className="p-4 border rounded-md">
                     <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 font-medium">
                         {item.title}
                     </a>
-                </Card>
+                </div>
             ))}
         </div>
     );
 };
 
 export default SearchResults;
-

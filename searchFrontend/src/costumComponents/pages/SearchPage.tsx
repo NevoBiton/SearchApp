@@ -1,24 +1,33 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setQuery, setResults } from "@/redux/searchSlice";
 import api from "@/lib/api";
 import SearchBar from "@/costumComponents/SearchBar.tsx";
 import SearchResults from "@/costumComponents/SearchResults.tsx";
 import PaginationControls from "@/costumComponents/PaginationControls.tsx";
+import { RootState } from "@/redux/store";
 
 const SearchPage = () => {
     const [searchParams] = useSearchParams();
     const dispatch = useDispatch();
-    const queryFromUrl = searchParams.get("query");
+    const queryFromUrl = searchParams.get("query") || "";
     const pageFromUrl = parseInt(searchParams.get("page") || "1", 10);
     const [loading, setLoading] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
     const limit = 5;
+
+    const searchResults = useSelector((state: RootState) => state.search.results);
 
     useEffect(() => {
         if (queryFromUrl) {
             dispatch(setQuery(queryFromUrl));
             fetchSearchResults(queryFromUrl, pageFromUrl);
+            setHasSearched(true);
+        } else {
+            dispatch(setQuery(""));
+            dispatch(setResults({ results: [], total: 0 }));
+            setHasSearched(false);
         }
     }, [queryFromUrl, pageFromUrl]);
 
@@ -43,11 +52,12 @@ const SearchPage = () => {
                     Search
                 </h1>
                 <SearchBar setLoading={setLoading} />
-                <SearchResults loading={loading} />
-                <PaginationControls />
+                {hasSearched && <SearchResults loading={loading} />}
+                {hasSearched && searchResults.length > 0 && <PaginationControls />}
             </div>
         </div>
     );
 };
 
 export default SearchPage;
+
