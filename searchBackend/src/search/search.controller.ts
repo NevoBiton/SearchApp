@@ -2,14 +2,14 @@ import { Controller, Get, Post, Body, Query, Delete } from "@nestjs/common";
 import { SearchService } from "./search.service";
 import { SearchQueryDto } from "./dto/search-query.dto";
 import { SaveQueryDto } from "./dto/save-query.dto";
-import { SearchResultDto } from "./dto/search-result.dto";
+import {SearchResponseDto} from "./dto/search-response.dto";
 
 @Controller("search")
 export class SearchController {
     constructor(private readonly searchService: SearchService) {}
 
     @Get()
-    async getResults(@Query() queryDto: SearchQueryDto): Promise<SearchResultDto[]> {
+    async getResults(@Query() queryDto: SearchQueryDto): Promise<SearchResponseDto> {
         return this.searchService.searchDuckDuckGo(queryDto.query, queryDto.limit, queryDto.offset);
     }
 

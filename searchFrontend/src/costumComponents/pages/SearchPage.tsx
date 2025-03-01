@@ -22,10 +22,10 @@ const SearchPage = () => {
     const fetchSearchResults = async (query: string) => {
         try {
             const response = await api.get(`/search?query=${encodeURIComponent(query)}`);
-            dispatch(setResults(response.data));
+            dispatch(setResults(response.data)); // Now correctly structured
         } catch (error) {
             console.error("Error fetching search results:", error);
-            dispatch(setResults([]));
+            dispatch(setResults({ results: [], total: 0 })); // Ensure correct type
         }
     };
 

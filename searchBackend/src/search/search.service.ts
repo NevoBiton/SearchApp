@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, InternalServerErrorException} from '@nestjs/common';
 import axios from 'axios';
 import * as fs from 'fs';
 import * as path from 'path';
+import {SearchResponseDto} from "./dto/search-response.dto";
 
 @Injectable()
 export class SearchService {
@@ -15,26 +16,39 @@ export class SearchService {
         }
     }
 
-    async searchDuckDuckGo(query: string, limit: number, offset: number) {
-        const apiUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
+    async searchDuckDuckGo(query: string, limit: number = 5, offset: number = 0): Promise<SearchResponseDto> {
+        const apiUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`;
 
         try {
             const response = await axios.get(apiUrl);
 
-            let results = response.data.RelatedTopics
-                .filter((item: any) => item.FirstURL && item.Text)
+            if (!response.data || !response.data.RelatedTopics) {
+                console.warn(`No results found for query: ${query}`);
+                return { results: [], total: 0 };
+            }
+
+            const results = response.data.RelatedTopics
+                .flatMap((item: any) => {
+                    if (item.Topics) {
+                        return item.Topics;
+                    }
+                    return item;
+                })
+                .filter((item: any) => item.Text && item.FirstURL)
+                .slice(offset, offset + limit)
                 .map((item: any) => ({
-                    title: item.Text,
-                    url: item.FirstURL,
+                    title: item.Text || 'No Title',
+                    url: item.FirstURL || '#',
                 }));
 
-            results = results.slice(offset, offset + limit);
 
-            this.saveSearchQuery(query);
-
-            return results.length ? results : [{ title: 'No results found', url: '#' }];
+            return {
+                results,
+                total: response.data.RelatedTopics.length,
+            };
         } catch (error) {
-            throw new Error('Error fetching search results');
+            console.error('Error fetching search results:', error.message);
+            throw new InternalServerErrorException('Failed to fetch search results');
         }
     }
 
