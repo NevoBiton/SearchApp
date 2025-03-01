@@ -49,7 +49,7 @@ const SearchPage = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-6">
-            <div className="w-full max-w-2xl bg-card shadow-lg rounded-lg p-6 relative">
+            <div className="w-full max-w-2xl bg-card shadow-lg rounded-lg p-6 relative border border-gray-200 dark:border-gray-400">
                 <h1 className="text-primary font-bold text-3xl text-center mb-4">
                     Search
                 </h1>

@@ -37,8 +37,7 @@ const SearchHistoryPage = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-6">
-            <div className="w-full max-w-2xl bg-card shadow-lg rounded-lg p-6">
-                {/* 🔹 Header */}
+            <div className="w-full max-w-2xl bg-card shadow-lg rounded-lg p-6 border border-gray-200 dark:border-gray-400">
                 <div className="flex justify-between items-center mb-4">
                     <h1 className="text-primary font-bold text-xl">Search History</h1>
                     {searchHistory.length > 0 && (
