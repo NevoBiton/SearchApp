@@ -38,9 +38,8 @@ export class SearchService {
                 }));
 
 
-            if (results.length > 0) {
                 this.saveSearchQuery(query);
-            }
+
 
             return {
                 results,

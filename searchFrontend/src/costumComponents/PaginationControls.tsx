@@ -2,6 +2,7 @@ import { useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const PaginationControls = () => {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -17,26 +18,35 @@ const PaginationControls = () => {
         }
     };
 
+    if (totalPages <= 1) return null;
+
     return (
-        <div className="flex justify-center space-x-2 mt-4">
+        <div className="flex items-center justify-center space-x-4 mt-6">
             <Button
                 onClick={() => goToPage(page - 1)}
                 disabled={page === 1}
                 variant="outline"
+                className="cursor-pointer flex items-center gap-1"
             >
+                <ChevronLeft className="w-4 h-4" />
                 Previous
             </Button>
-            <span className="text-lg font-semibold">{page} / {totalPages}</span>
+
+            <span className="text-sm font-medium text-muted-foreground">
+                Page <span className="text-primary font-semibold">{page}</span> of {totalPages}
+            </span>
+
             <Button
                 onClick={() => goToPage(page + 1)}
                 disabled={page >= totalPages}
                 variant="outline"
+                className="cursor-pointer flex items-center gap-1"
             >
                 Next
+                <ChevronRight className="w-4 h-4" />
             </Button>
         </div>
     );
 };
 
 export default PaginationControls;
-
