@@ -20,7 +20,7 @@ git clone https://github.com/your-username/searchApp.git
 
 cd searchApp/searchBackend
 
-npm install
+npm install (node version 20 and up!)
 
 npm run start
 

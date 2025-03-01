@@ -33,7 +33,7 @@ git clone https://github.com/your-username/searchApp.git
 
 cd searchApp/searchFrontend
 
-npm install
+npm install (node version 20 and up!)
 
 npm run dev
 
