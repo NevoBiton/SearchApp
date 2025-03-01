@@ -2,9 +2,14 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Card } from "@/components/ui/card";
 import { SearchResult } from "@/type.ts";
+import SearchSkeletons from "@/costumComponents/SearchSkeletons.tsx";
 
-const SearchResults = () => {
-    const results: SearchResult[] = useSelector((state: RootState) => state.search.results) ?? [];
+const SearchResults = ({ loading }: { loading: boolean }) => {
+    const results: SearchResult[] = useSelector((state: RootState) => state.search.results);
+
+    if (loading) {
+        return <SearchSkeletons />;
+    }
 
     if (results.length === 0) {
         return <p className="text-gray-500 text-center mt-4">No results found.</p>;
@@ -24,3 +29,4 @@ const SearchResults = () => {
 };
 
 export default SearchResults;
+

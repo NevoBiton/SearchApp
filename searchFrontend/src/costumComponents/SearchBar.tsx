@@ -7,20 +7,25 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RootState } from "@/redux/store";
 
-const SearchBar = () => {
+interface SearchBarProps {
+    setLoading: (loading: boolean) => void;
+}
+
+const SearchBar = ({ setLoading }: SearchBarProps) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const storedQuery = useSelector((state: RootState) => state.search.query);
     const [localQuery, setLocalQuery] = useState(storedQuery);
 
     useEffect(() => {
-        setLocalQuery(storedQuery); // Update input when query updates
+        setLocalQuery(storedQuery);
     }, [storedQuery]);
 
     const handleSearch = async () => {
         if (!localQuery.trim()) return;
 
         dispatch(setQuery(localQuery));
+        setLoading(true);
 
         navigate(`/search?query=${encodeURIComponent(localQuery)}`);
 
@@ -28,8 +33,16 @@ const SearchBar = () => {
             const response = await api.get(`/search?query=${encodeURIComponent(localQuery)}`);
             dispatch(setResults(response.data));
         } catch (error) {
-            console.error("Error fetching search results:", error);
-            dispatch(setResults([]));
+            console.error(error);
+            dispatch(setResults({ results: [], total: 0 }));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            handleSearch();
         }
     };
 
@@ -39,6 +52,7 @@ const SearchBar = () => {
                 type="text"
                 value={localQuery}
                 onChange={(e) => setLocalQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 placeholder="Search for something..."
                 className="w-full border-gray-300 rounded-md p-2"
             />
@@ -50,4 +64,3 @@ const SearchBar = () => {
 };
 
 export default SearchBar;
-

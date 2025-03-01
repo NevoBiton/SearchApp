@@ -16,6 +16,7 @@ export class SearchService {
         }
     }
 
+
     async searchDuckDuckGo(query: string, limit: number = 5, offset: number = 0): Promise<SearchResponseDto> {
         const apiUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`;
 
@@ -28,12 +29,7 @@ export class SearchService {
             }
 
             const results = response.data.RelatedTopics
-                .flatMap((item: any) => {
-                    if (item.Topics) {
-                        return item.Topics;
-                    }
-                    return item;
-                })
+                .flatMap((item: any) => (item.Topics ? item.Topics : item))
                 .filter((item: any) => item.Text && item.FirstURL)
                 .slice(offset, offset + limit)
                 .map((item: any) => ({
@@ -41,6 +37,10 @@ export class SearchService {
                     url: item.FirstURL || '#',
                 }));
 
+
+            if (results.length > 0) {
+                this.saveSearchQuery(query);
+            }
 
             return {
                 results,
@@ -51,6 +51,8 @@ export class SearchService {
             throw new InternalServerErrorException('Failed to fetch search results');
         }
     }
+
+
 
 
     public saveSearchQuery(query: string) {

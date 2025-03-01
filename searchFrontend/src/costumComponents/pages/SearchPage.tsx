@@ -1,31 +1,38 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setQuery, setResults } from "@/redux/searchSlice";
 import api from "@/lib/api";
 import SearchBar from "@/costumComponents/SearchBar.tsx";
 import SearchResults from "@/costumComponents/SearchResults.tsx";
-
+import PaginationControls from "@/costumComponents/PaginationControls.tsx";
 
 const SearchPage = () => {
     const [searchParams] = useSearchParams();
     const dispatch = useDispatch();
     const queryFromUrl = searchParams.get("query");
+    const pageFromUrl = parseInt(searchParams.get("page") || "1", 10);
+    const [loading, setLoading] = useState(false);
+    const limit = 5;
 
     useEffect(() => {
         if (queryFromUrl) {
             dispatch(setQuery(queryFromUrl));
-            fetchSearchResults(queryFromUrl);
+            fetchSearchResults(queryFromUrl, pageFromUrl);
         }
-    }, [queryFromUrl]);
+    }, [queryFromUrl, pageFromUrl]);
 
-    const fetchSearchResults = async (query: string) => {
+    const fetchSearchResults = async (query: string, page: number) => {
         try {
-            const response = await api.get(`/search?query=${encodeURIComponent(query)}`);
-            dispatch(setResults(response.data)); // Now correctly structured
+            setLoading(true);
+            const offset = (page - 1) * limit;
+            const response = await api.get(`/search?query=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`);
+            dispatch(setResults(response.data));
         } catch (error) {
             console.error("Error fetching search results:", error);
-            dispatch(setResults({ results: [], total: 0 })); // Ensure correct type
+            dispatch(setResults({ results: [], total: 0 }));
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -35,12 +42,12 @@ const SearchPage = () => {
                 <h1 className="text-primary font-bold text-3xl text-center mb-4">
                     Search
                 </h1>
-                <SearchBar />
-                <SearchResults />
+                <SearchBar setLoading={setLoading} />
+                <SearchResults loading={loading} />
+                <PaginationControls />
             </div>
         </div>
     );
 };
 
 export default SearchPage;
-
